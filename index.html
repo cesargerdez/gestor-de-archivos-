@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GACETAS MUNICIPALES - Gestor de Documentos</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Modal de Login -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-content">
+            <div class="login-header">
+                <h2>Acceso de Administrador</h2>
+                <p>Ingrese sus credenciales para acceder al panel de administración</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" placeholder="Ingrese su usuario" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="Ingrese su contraseña" required>
+                </div>
+                <button type="submit" class="login-btn">Iniciar Sesión</button>
+            </form>
+            <div style="margin-top: 20px; font-size: 1rem; color: #7f8c8d;">
+                <p><strong>Credenciales de prueba:</strong></p>
+                <p>Usuario: admin</p>
+                <p>Contraseña: admin123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gestión de Categorías -->
+    <div class="category-modal" id="categoryModal">
+        <div class="category-modal-content">
+            <div class="category-modal-header">
+                <h2>Gestión de Categorías</h2>
+                <button class="close-category-modal" id="closeCategoryModal">&times;</button>
+            </div>
+            <div class="category-list" id="categoryList">
+                <!-- Las categorías se cargarán aquí dinámicamente -->
+            </div>
+            <div class="add-category-form">
+                <h3>Agregar Nueva Categoría</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newCategoryName">Nombre de Categoría</label>
+                        <input type="text" id="newCategoryName" placeholder="Ej: Ordenanzas Municipales">
+                    </div>
+                    <div class="form-group">
+                        <label for="newCategoryColor">Color</label>
+                        <input type="color" id="newCategoryColor" value="#3498db">
+                    </div>
+                </div>
+                <button class="add-category-btn" id="addCategoryBtn">
+                    <i class="fas fa-plus"></i> Agregar Categoría
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Descripción -->
+    <div class="description-modal" id="descriptionModal">
+        <div class="description-content">
+            <div class="description-header">
+                <h3 id="descriptionTitle">Descripción del Documento</h3>
+                <button class="close-description" id="closeDescription">&times;</button>
+            </div>
+            <div class="description-text" id="descriptionText">
+                <!-- La descripción se mostrará aquí -->
+            </div>
+            <textarea class="description-editor" id="descriptionEditor" style="display: none;"></textarea>
+            <div class="description-actions" id="descriptionActions">
+                <button class="edit-description-btn" id="editDescriptionBtn">Editar Descripción</button>
+            </div>
+            <div class="description-actions" id="editActions" style="display: none;">
+                <button class="cancel-edit" id="cancelEdit">Cancelar</button>
+                <button class="save-description" id="saveDescription">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Vista Previa -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-content">
+            <div class="preview-header">
+                <h3 id="previewTitle">Vista Previa del Documento</h3>
+                <div class="preview-actions">
+                    <button class="preview-action-btn" id="downloadPreviewBtn">
+                        <i class="fas fa-download"></i> Descargar
+                    </button>
+                    <button class="preview-action-btn" id="sharePreviewBtn">
+                        <i class="fas fa-share-alt"></i> Compartir
+                    </button>
+                </div>
+                <button class="close-preview" id="closePreview">&times;</button>
+            </div>
+            <div class="preview-body">
+                <div class="preview-container" id="previewContainer">
+                    <!-- El contenido de vista previa se cargará aquí -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-file-alt"></i>
+                    <h1>GACETAS MUNICIPALES</h1>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Buscar documentos por nombre, descripción o categoría...">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="user-actions" id="userActions">
+                    <!-- Se llenará dinámicamente con información del usuario -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Información de acceso público -->
+        <div class="public-access-info" id="publicAccessInfo">
+            <i class="fas fa-globe-americas"></i>
+            <h3>Acceso Público</h3>
+            <p>Todos los documentos están disponibles para visualización y descarga pública</p>
+        </div>
+
+        <!-- Información de resultados de búsqueda -->
+        <div class="search-results-info" id="searchResultsInfo" style="display: none;">
+            <i class="fas fa-search"></i>
+            <span id="searchResultsText"></span>
+            <button class="btn btn-secondary" id="clearSearch" style="padding: 5px 10px;">
+                <i class="fas fa-times"></i> Limpiar búsqueda
+            </button>
+        </div>
+
+        <!-- Sección de Categorías -->
+        <section class="categories-section">
+            <div class="categories-header">
+                <h2>Categorías de Documentos</h2>
+                <button class="category-manager-btn" id="categoryManagerBtn" style="display: none;">
+                    <i class="fas fa-cog"></i> Gestionar Categorías
+                </button>
+            </div>
+            <div class="categories-filters" id="categoriesFilters">
+                <!-- Los filtros de categorías se cargarán aquí dinámicamente -->
+            </div>
+        </section>
+
+        <section class="upload-section" id="uploadSection">
+            <h2>Subir Documentos</h2>
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Arrastra y suelta archivos aquí</h3>
+                <p>o haz clic para seleccionar archivos</p>
+                <p class="file-types">Soporta: PDF, DOC, DOCX, JPG, PNG, GIF</p>
+                <input type="file" id="fileInput" class="file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif">
+            </div>
+            
+            <!-- Lista de archivos seleccionados -->
+            <div class="selected-files" id="selectedFiles">
+                <h4>Archivos seleccionados:</h4>
+                <div class="file-list-preview" id="fileListPreview">
+                    <!-- Los archivos seleccionados se mostrarán aquí -->
+                </div>
+            </div>
+            
+            <!-- Selector de categoría -->
+            <div class="upload-category-selector">
+                <label for="fileCategory">Categoría del documento:</label>
+                <select class="category-select" id="fileCategory">
+                    <!-- Las opciones se llenarán dinámicamente -->
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" id="uploadBtn">
+                <i class="fas fa-upload"></i> Subir Archivos
+            </button>
+        </section>
+
+        <section class="files-section">
+            <h2>Documentos Disponibles</h2>
+            <div class="file-list" id="fileList">
+                <!-- Los archivos se cargarán aquí dinámicamente -->
+            </div>
+            <div class="no-results" id="noResults" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>No se encontraron resultados</h3>
+                <p>Intenta con otros términos de búsqueda o categorías diferentes</p>
+            </div>
+        </section>
+
+        <!-- Gestión de datos (solo para administradores) -->
+        <section class="data-management" id="dataManagement" style="display: none;">
+            <h3>Gestión de Datos</h3>
+            <p>Administra los datos almacenados en el sistema</p>
+            <div class="data-management-actions">
+                <button class="data-management-btn" id="exportDataBtn">
+                    <i class="fas fa-download"></i> Exportar Datos
+                </button>
+                <button class="data-management-btn" id="importDataBtn">
+                    <i class="fas fa-upload"></i> Importar Datos
+                </button>
+                <button class="data-management-btn warning" id="clearDataBtn">
+                    <i class="fas fa-trash"></i> Limpiar Todos los Datos
+                </button>
+            </div>
+            <input type="file" id="importDataInput" style="display: none;" accept=".json">
+        </section>
+    </main>
+
+    <!-- Toast notifications -->
+    <div class="toast" id="toast"></div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CASA DEL HISTORIADOR. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
